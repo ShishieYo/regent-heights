@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Regent Heights Bedroom Budget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,650&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: summary band of three room totals, then one itemized table per room, then assumptions */
+:root{
+  --bg:#f5f3ef; --surface:#fffdfa; --ink:#2b2824; --muted:#6e675e; --line:#e2ddd4; --accent:#8a6a43; --tint:#efe9df;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1a1916; --surface:#23211d; --ink:#ece7df; --muted:#a59d91; --line:#36332d; --accent:#d2ad7e; --tint:#2b2823; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1916; --surface:#23211d; --ink:#ece7df; --muted:#a59d91; --line:#36332d; --accent:#d2ad7e; --tint:#2b2823; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:900px;margin:0 auto;display:grid;gap:28px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-family:var(--display);font-weight:650;font-size:clamp(26px,4.5vw,38px);line-height:1.1;margin:6px 0 8px;text-wrap:balance}
+h2{font-family:var(--display);font-weight:500;font-size:20px;margin:0 0 10px}
+header p{margin:0;color:var(--muted);max-width:66ch}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:2px}
+.tile .label{font-size:13px;color:var(--muted)}
+.tile .value{font-family:var(--display);font-size:22px;font-weight:500}
+.tile.total{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tile.total .label{color:inherit;opacity:.75}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.num,th.num{text-align:right}
+tr.group td{background:var(--tint);font-weight:600;font-size:13px}
+tr.sum td{font-weight:600;border-bottom:none}
+.note{color:var(--muted);font-size:13px}
+ul{margin:0;padding-left:18px;display:grid;gap:5px;color:var(--muted);max-width:72ch}
+section{min-width:0}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Alexa unit · second floor · preliminary</div>
+    <h1>Bedroom fit-out budget</h1>
+    <p>Indicative peso ranges for the three bedroom designs. These are planning numbers, not quotations. Get two or three contractor quotes against the final drawings before committing.</p>
+  </header>
+
+  <div class="summary">
+    <div class="tile"><span class="label">Master bedroom</span><span class="value num">₱104k – 208k</span></div>
+    <div class="tile"><span class="label">Boys' room</span><span class="value num">₱119k – 229k</span></div>
+    <div class="tile"><span class="label">Study</span><span class="value num">₱101k – 200k</span></div>
+    <div class="tile total"><span class="label">Three rooms, before contingency</span><span class="value num">₱324k – 637k</span></div>
+  </div>
+
+  <section>
+    <h2>Master bedroom</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>Item</th><th>Spec assumed</th><th class="num">Range (₱)</th></tr></thead>
+      <tbody>
+        <tr class="group"><td colspan="3">Custom cabinets and built-ins</td></tr>
+        <tr><td>Wardrobe in the 1.8 m pocket</td><td>Floor to ceiling, sliding doors, marine plywood carcass, laminate finish</td><td class="num">27,000 – 45,000</td></tr>
+        <tr><td>Mirror door panel</td><td>Full-length mirror on one sliding panel</td><td class="num">3,000 – 6,000</td></tr>
+        <tr><td>Headboard and oak feature wall</td><td>Upholstered headboard on a 2.5 m laminate panel</td><td class="num">12,000 – 25,000</td></tr>
+        <tr><td>Floating nightstands (2)</td><td>One drawer each, wall-hung</td><td class="num">6,000 – 12,000</td></tr>
+        <tr><td>Slim vanity with mirror</td><td>Optional, 60 × 30 cm floating top</td><td class="num">5,000 – 10,000</td></tr>
+        <tr class="group"><td colspan="3">Bed and loose furniture</td></tr>
+        <tr><td>Queen lift-up storage bed frame</td><td>Hydraulic lift, 60 × 75 in</td><td class="num">15,000 – 30,000</td></tr>
+        <tr><td>Queen mattress</td><td>Foam or pocket spring, 8–10 in</td><td class="num">12,000 – 30,000</td></tr>
+        <tr class="group"><td colspan="3">Lighting and electrical</td></tr>
+        <tr><td>Bedside wall lamps, ceiling light, 2 added outlets with USB</td><td>Warm white LED</td><td class="num">8,000 – 18,000</td></tr>
+        <tr class="group"><td colspan="3">Paint and finishing</td></tr>
+        <tr><td>Feature wall paint and touch-up</td><td>Washable latex</td><td class="num">4,000 – 8,000</td></tr>
+        <tr><td>Curtains for 2 windows</td><td>Blackout plus sheer, ceiling track</td><td class="num">6,000 – 12,000</td></tr>
+        <tr class="group"><td colspan="3">Installation and labor</td></tr>
+        <tr><td>Electrician, painter, curtain install</td><td>Cabinet install is in the cabinet prices</td><td class="num">6,000 – 12,000</td></tr>
+        <tr class="sum"><td colspan="2">Master bedroom total</td><td class="num">104,000 – 208,000</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Boys' room</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>Item</th><th>Spec assumed</th><th class="num">Range (₱)</th></tr></thead>
+      <tbody>
+        <tr class="group"><td colspan="3">Custom cabinets and built-ins</td></tr>
+        <tr><td>Bunk bed with under-bed drawers</td><td>Wall-anchored, full guardrails, toddler rail on lower bunk</td><td class="num">30,000 – 55,000</td></tr>
+        <tr><td>Storage stairs</td><td>3 drawer steps, top cabinet, handrail</td><td class="num">18,000 – 35,000</td></tr>
+        <tr><td>Closet, 1.4 m</td><td>Floor to ceiling, sliding doors, double hanging rods</td><td class="num">21,000 – 35,000</td></tr>
+        <tr><td>Desk with drawer pedestal and wall shelf</td><td>1.4 m × 55 cm</td><td class="num">8,000 – 15,000</td></tr>
+        <tr><td>Low toy cabinet</td><td>90 cm high, child-height doors</td><td class="num">5,000 – 9,000</td></tr>
+        <tr><td>Bags and shoes cabinet by the door</td><td>1.0 m, low, with hooks</td><td class="num">6,000 – 10,000</td></tr>
+        <tr class="group"><td colspan="3">Beds and loose furniture</td></tr>
+        <tr><td>Single mattresses (2)</td><td>36 × 75 in, 4–6 in foam for the bunk</td><td class="num">8,000 – 18,000</td></tr>
+        <tr><td>Kids' desk chair and round rug</td><td></td><td class="num">4,000 – 10,000</td></tr>
+        <tr class="group"><td colspan="3">Lighting and electrical</td></tr>
+        <tr><td>Two bunk reading lights, desk lamp, ceiling light, outlets</td><td>Outlets with child-safe shutters</td><td class="num">7,000 – 15,000</td></tr>
+        <tr class="group"><td colspan="3">Paint and finishing</td></tr>
+        <tr><td>Accent wall paint</td><td>Washable, muted blue or sage</td><td class="num">4,000 – 8,000</td></tr>
+        <tr><td>Blinds for 1 window</td><td>Blackout roller</td><td class="num">2,000 – 5,000</td></tr>
+        <tr><td>Window restrictors or grill</td><td>Limits opening for the second floor</td><td class="num">1,000 – 4,000</td></tr>
+        <tr class="group"><td colspan="3">Installation and labor</td></tr>
+        <tr><td>Electrician, painter, anchoring checks</td><td></td><td class="num">5,000 – 10,000</td></tr>
+        <tr class="sum"><td colspan="2">Boys' room total</td><td class="num">119,000 – 229,000</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Study</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>Item</th><th>Spec assumed</th><th class="num">Range (₱)</th></tr></thead>
+      <tbody>
+        <tr class="group"><td colspan="3">Custom cabinets and built-ins</td></tr>
+        <tr><td>Loft bed structure</td><td>Single, wall-anchored on two sides, slotted guardrail</td><td class="num">30,000 – 55,000</td></tr>
+        <tr><td>Shelf-ladder</td><td>Open shelves that double as steps</td><td class="num">8,000 – 15,000</td></tr>
+        <tr><td>Desk under the loft</td><td>1.9 m × 65 cm, two drawer pedestals, cable tray</td><td class="num">15,000 – 28,000</td></tr>
+        <tr><td>Storage wall, 1.5 m</td><td>Closed base and top, open shelves for the call background</td><td class="num">18,000 – 32,000</td></tr>
+        <tr class="group"><td colspan="3">Bed and loose furniture</td></tr>
+        <tr><td>Single mattress for the loft</td><td>36 × 75 in, 5–6 in foam</td><td class="num">4,000 – 9,000</td></tr>
+        <tr><td>Office or gaming chair and rug</td><td>Computer and monitor not included</td><td class="num">7,000 – 20,000</td></tr>
+        <tr class="group"><td colspan="3">Lighting and electrical</td></tr>
+        <tr><td>LED strip under the loft, loft reading light, ceiling light, desk outlets</td><td>Dedicated outlets at desk height</td><td class="num">8,000 – 18,000</td></tr>
+        <tr class="group"><td colspan="3">Paint and finishing</td></tr>
+        <tr><td>Paint touch-up</td><td></td><td class="num">4,000 – 8,000</td></tr>
+        <tr><td>Blinds for 1 window</td><td>Roller blind</td><td class="num">2,000 – 5,000</td></tr>
+        <tr class="group"><td colspan="3">Installation and labor</td></tr>
+        <tr><td>Electrician, painter</td><td></td><td class="num">5,000 – 10,000</td></tr>
+        <tr class="sum"><td colspan="2">Study total</td><td class="num">101,000 – 200,000</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>By category, all three rooms</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>Category</th><th class="num">Range (₱)</th></tr></thead>
+      <tbody>
+        <tr><td>Custom cabinets and built-ins</td><td class="num">212,000 – 387,000</td></tr>
+        <tr><td>Beds, mattresses and loose furniture</td><td class="num">50,000 – 117,000</td></tr>
+        <tr><td>Lighting and electrical</td><td class="num">23,000 – 51,000</td></tr>
+        <tr><td>Paint and finishing</td><td class="num">23,000 – 50,000</td></tr>
+        <tr><td>Installation and labor</td><td class="num">16,000 – 32,000</td></tr>
+        <tr class="sum"><td>Subtotal</td><td class="num">324,000 – 637,000</td></tr>
+        <tr><td>Contingency, 10%</td><td class="num">32,000 – 64,000</td></tr>
+        <tr class="sum"><td>Planning total</td><td class="num">356,000 – 701,000</td></tr>
+        <tr><td>Optional: split-type inverter aircon, 1 HP × 3, installed</td><td class="num">90,000 – 126,000</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Assumptions</h2>
+    <ul>
+      <li>Ranges reflect typical Central Luzon pricing for local cabinet makers. They are not supplier prices.</li>
+      <li>The low end assumes laminated particle board and basic hardware. The high end assumes marine plywood carcasses, high-pressure laminate and soft-close hardware, which hold up better in humid rooms.</li>
+      <li>Cabinet prices include fabrication, delivery and installation. Electrical work assumes new points tap existing circuits without a new breaker.</li>
+      <li>Sizes come from the developer floor plan and an estimated 2.4 m ceiling. Final prices depend on measured dimensions.</li>
+      <li>Ready-made bunk and loft beds can cut the built-in line by roughly a third, with less fitted storage.</li>
+    </ul>
+  </section>
+</div>
+
+</body>
+</html>
