@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Regent Heights Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,650&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f5f3ef; --surface:#fffdfa; --ink:#2b2824; --muted:#6e675e; --line:#e2ddd4; --accent:#8a6a43;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#1a1916; --surface:#23211d; --ink:#ece7df; --muted:#a59d91; --line:#36332d; --accent:#d2ad7e; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:40px}
+.wrap{max-width:820px;margin:0 auto;display:grid;gap:28px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-family:var(--display);font-weight:650;font-size:clamp(28px,5vw,42px);line-height:1.1;margin:6px 0 8px;text-wrap:balance}
+header p{margin:0;color:var(--muted);max-width:60ch}
+.rooms{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px}
+.room{display:grid;gap:4px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:inherit;text-decoration:none}
+a.room:hover{border-color:var(--accent)}
+a.room:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.room h2{font-family:var(--display);font-weight:500;font-size:18px;margin:0}
+.room p{margin:0;color:var(--muted);font-size:14px}
+.status{font-size:12px;font-weight:600;color:var(--accent)}
+.room.soon{opacity:.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Alexa unit · Regent Heights</div>
+    <h1>Our family house</h1>
+    <p>Design studies for each part of the house, room by room. All layouts are preliminary until measured on site.</p>
+  </header>
+  <div class="rooms">
+    <a class="room" href="bedrooms/">
+      <span class="status">3D model</span>
+      <h2>Second floor bedrooms</h2>
+      <p>Master, boys' room with storage-stair bunk, and study.</p>
+    </a>
+    <div class="room soon">
+      <span class="status">Coming next</span>
+      <h2>Ground floor</h2>
+      <p>Living, dining and kitchen.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
