@@ -500,12 +500,12 @@ box(2.42,3.95,0.72,1.4,8.0,10.25,tint); box(2.46,3.91,1.4,1.47,8.25,10.05,carMat
 box(2.45,2.8,0.52,0.62,6.8,6.82,mat.glow,ground,false); box(3.57,3.92,0.52,0.62,6.8,6.82,mat.glow,ground,false);
 [[2.32,7.75],[4.05,7.75],[2.32,10.3],[4.05,10.3]].forEach(([x,z])=>{ const w=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.2,24),mat.dark); w.rotation.z=Math.PI/2; w.position.set(x,0.3,z); w.castShadow=true; ground.add(w); });
 
-// Lean-to roof over the back half of T&B 1, where the second floor does not cover it
-{ const zA=-0.15, zB=1.175, yA=2.84, yB=2.98, L=Math.hypot(zB-zA,yB-yA), a=Math.atan((yB-yA)/(zB-zA));
-  const m=new THREE.Mesh(new THREE.BoxGeometry(1.55,0.06,L),roofMat); m.position.set(0.675,(yA+yB)/2+0.03,(zA+zB)/2); m.rotation.x=-a; m.castShadow=true; m.receiveShadow=true; ground.add(m);
-  for(let x=0.15;x<1.4;x+=0.3){ const r=new THREE.Mesh(new THREE.BoxGeometry(0.025,0.025,L),roofMat); r.position.set(x,(yA+yB)/2+0.07,(zA+zB)/2); r.rotation.x=-a; ground.add(r); }
-  box(-0.1,1.45,yA-0.14,yA+0.06,zA-0.04,zA+0.02,trim,ground);
-  box(-0.1,1.45,yB,yB+0.12,zB-0.06,zB,trim,ground); }
+// Lean-to roof over the back half of T&B 1, high at the party wall and sloping down toward the service area
+{ const xA=0, xB=1.55, yA=3.05, yB=2.82, zA=-0.1, zB=1.175, L=Math.hypot(xB-xA,yA-yB), a=Math.atan((yA-yB)/(xB-xA));
+  const m=new THREE.Mesh(new THREE.BoxGeometry(L,0.06,zB-zA),roofMat); m.position.set((xA+xB)/2,(yA+yB)/2+0.03,(zA+zB)/2); m.rotation.z=-a; m.castShadow=true; m.receiveShadow=true; ground.add(m);
+  for(let z=zA+0.15;z<zB;z+=0.25){ const r=new THREE.Mesh(new THREE.BoxGeometry(L,0.025,0.025),roofMat); r.position.set((xA+xB)/2,(yA+yB)/2+0.07,z); r.rotation.z=-a; ground.add(r); }
+  box(xB-0.02,xB+0.04,yB-0.14,yB+0.06,zA,zB,trim,ground);
+  box(-0.06,0.06,2.8,yA+0.14,zA,zB,mat.wall,ground); }
 
 const gfLabels=[label('Sala',3.7,3.1,5.6),label('Dining',2.3,3.1,3.6),label('Kitchen',3.6,3.1,2.4),label('T&B',0.65,3.1,1.0),label('Stair',0.5,3.3,3.6),label('Carport',2.6,3.3,8.9),label('Service area',3.4,3.1,0.6)];
 CUR = scene;
