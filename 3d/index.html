@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Regent Heights House</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,650&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: a single working viewer — header, 3D stage, view controls, then a quiet key of finishes and assumptions */
+:root{
+  --bg:#f5f3ef; --surface:#fffdfa; --ink:#2b2824; --muted:#6e675e; --line:#e2ddd4;
+  --oak:#c29a68; --sage:#7f9479; --accent:#8a6a43; --scene:#ece8e1;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1a1916; --surface:#23211d; --ink:#ece7df; --muted:#a59d91; --line:#36332d;
+  --oak:#c9a273; --sage:#93a88c; --accent:#d2ad7e; --scene:#26241f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1916; --surface:#23211d; --ink:#ece7df; --muted:#a59d91; --line:#36332d;
+  --oak:#c9a273; --sage:#93a88c; --accent:#d2ad7e; --scene:#26241f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:20px 40px}
+.wrap{max-width:1100px;margin:0 auto;display:grid;gap:18px}
+header{display:grid;gap:6px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-family:var(--display);font-weight:650;font-size:clamp(26px,4vw,38px);line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted);max-width:68ch}
+.stage{position:relative;height:clamp(360px,66vh,700px);border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--scene)}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none}
+.hint{position:absolute;left:12px;bottom:10px;font-size:12px;color:var(--muted);background:color-mix(in srgb,var(--surface) 85%,transparent);padding:4px 10px;border-radius:99px;pointer-events:none}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar button{font:inherit;font-weight:500;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:8px 16px;cursor:pointer}
+.bar button:hover{border-color:var(--accent)}
+.bar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bar button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bar .sep{flex:1 1 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px}
+.grid section{min-width:0}
+h2{font-family:var(--display);font-weight:500;font-size:18px;margin:0 0 10px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.swatches li{display:flex;gap:10px;align-items:center;font-size:14px}
+.chip{width:26px;height:26px;border-radius:6px;border:1px solid var(--line);flex:none}
+ul.notes{margin:0;padding-left:18px;color:var(--muted);display:grid;gap:4px}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Alexa unit · whole house · preliminary</div>
+    <h1>Both floors, one walk-through</h1>
+    <p>The ground floor and the bedrooms stacked as one house, joined by the stair. Use the room buttons to jump around, or walk up the stairs from the kitchen hallway to the bedroom hallway.</p>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="hint">Drag to rotate · scroll or pinch to zoom · right-drag to pan</div>
+  </div>
+
+  <div class="bar" role="group" aria-label="Camera views">
+    <button id="v-house" aria-pressed="true">Whole house</button>
+    <button id="v-ground" aria-pressed="false">Ground floor</button>
+    <button id="v-upper" aria-pressed="false">Second floor</button>
+    <button id="v-sala" aria-pressed="false">Sala</button>
+    <button id="v-kitchen" aria-pressed="false">Kitchen</button>
+    <button id="v-carport" aria-pressed="false">Carport</button>
+    <button id="v-master" aria-pressed="false">Master</button>
+    <button id="v-boys" aria-pressed="false">Boys' room</button>
+    <button id="v-study" aria-pressed="false">Study</button>
+  </div>
+  <div class="bar" role="group" aria-label="Actions">
+    <button id="walk" aria-pressed="false">Walk up the stairs</button>
+    <button id="t-sofa" aria-pressed="false">Open the sofa bed</button>
+    <button id="t-walls" aria-pressed="false">Lower the walls</button>
+  </div>
+
+  <div class="grid">
+    <section>
+      <h2>Finishes shown</h2>
+      <ul class="swatches">
+        <li><span class="chip" style="background:#f3efe8"></span>Warm white cabinets</li>
+        <li><span class="chip" style="background:#c9a273"></span>Light oak accents</li>
+        <li><span class="chip" style="background:#cfc5b6"></span>Greige fabric</li>
+        <li><span class="chip" style="background:#93a38c"></span>Sage accent</li>
+        <li><span class="chip" style="background:#8fa3b5"></span>Muted blue accent</li>
+        <li><span class="chip" style="background:#96663f"></span>Existing floor tile</li>
+        <li><span class="chip" style="background:#a8784a"></span>Carport soffit</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Built on assumptions</h2>
+      <ul class="notes">
+        <li>Room sizes come from the developer floor plans, not a tape measure.</li>
+        <li>Bedroom ceilings estimated at about 2.4 m from the front photo; floor-to-floor height assumed at 2.8 m.</li>
+        <li>The stair shape is inferred from both floor plans. Check it against the real stair before relying on it.</li>
+        <li>The kitchen counter is assumed to be an L along the back and side walls until a photo confirms it.</li>
+        <li>Window sills assumed at 0.9–1.0 m; door swings are approximate.</li>
+        <li>This is a layout model for proportions and fit, not a photoreal render.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const H = 2.4, T = 0.12;
+const stage = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+function syncBg(){ scene.background = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--scene').trim() || '#ece8e1'); }
+syncBg();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncBg);
+new MutationObserver(syncBg).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 100);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.maxPolarAngle = Math.PI/2 - 0.03;
+controls.minDistance = 0.3; controls.maxDistance = 40;
+
+scene.add(new THREE.HemisphereLight(0xfffaf2, 0x9c8468, 0.65));
+scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+const sun = new THREE.DirectionalLight(0xfff3e2, 0.85);
+sun.position.set(10, 16, 14);
+sun.target.position.set(2.5, 0, 6);
+sun.castShadow = true;
+sun.shadow.mapSize.set(3072,3072);
+Object.assign(sun.shadow.camera,{left:-11,right:11,top:11,bottom:-11,near:1,far:50});
+sun.shadow.bias = -0.0006;
+scene.add(sun, sun.target);
+
+const M = (c, o={}) => new THREE.MeshStandardMaterial(Object.assign({color:c, roughness:0.8, metalness:0}, o));
+const mat = {
+  wall:M(0xf4f1ec,{roughness:0.95}), white:M(0xf3efe8,{roughness:0.6}), oak:M(0xc9a273,{roughness:0.65}),
+  greige:M(0xcfc5b6,{roughness:0.95}), sage:M(0x93a38c,{roughness:0.85}), blue:M(0x8fa3b5,{roughness:0.9}),
+  linen:M(0xfbf9f5,{roughness:0.95}), dark:M(0x34302b,{roughness:0.5}), door:M(0x4a3527,{roughness:0.6}),
+  frame:M(0x1f1f1f,{roughness:0.4}), mirror:M(0xc9d3d8,{roughness:0.08,metalness:0.85}),
+  glass:M(0xcfe3ea,{transparent:true,opacity:0.3,roughness:0.05}), rug:M(0xe2d8c8,{roughness:1}),
+  curtain:M(0xebe4d8,{roughness:1}), service:M(0xd9d4cc,{roughness:1}),
+  glow:new THREE.MeshBasicMaterial({color:0xffe2b0})
+};
+
+let CUR = scene;
+function box(x1,x2,y1,y2,z1,z2,m,parent=CUR,cast=true){
+  const g = new THREE.BoxGeometry(Math.abs(x2-x1),Math.abs(y2-y1),Math.abs(z2-z1));
+  const mesh = new THREE.Mesh(g,m);
+  mesh.position.set((x1+x2)/2,(y1+y2)/2,(z1+z2)/2);
+  mesh.castShadow = cast; mesh.receiveShadow = true;
+  parent.add(mesh); return mesh;
+}
+
+// Floor tile texture: 20 cm planks, staggered, light grout
+function plankTexture(){
+  const c = document.createElement('canvas'); c.width = c.height = 512;
+  const x = c.getContext('2d');
+  const tones = ['#9a6a42','#8f603b','#a37249','#956641','#8a5c38'];
+  for(let r=0;r<5;r++){
+    const off = (r*0.37)%1;
+    for(let k=-1;k<2;k++){
+      const s = (k+off)*512;
+      x.fillStyle = tones[(r*3+k+5)%5];
+      x.fillRect(s, r*102.4, 512, 102.4);
+      x.fillStyle = '#cdbfae'; x.fillRect(s, r*102.4, 3, 102.4);
+    }
+    x.fillStyle = '#cdbfae'; x.fillRect(0, r*102.4, 512, 3);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding;
+  t.anisotropy = 8; return t;
+}
+const floorMat = M(0xffffff,{map:plankTexture(),roughness:0.35});
+
+function floor(pts,m){
+  const s = new THREE.Shape(pts.map(([px,pz])=>new THREE.Vector2(px,-pz)));
+  const mesh = new THREE.Mesh(new THREE.ShapeGeometry(s), m);
+  mesh.rotation.x = -Math.PI/2; mesh.receiveShadow = true; CUR.add(mesh);
+}
+// ---------- Second floor (2.8 m up, aligned to the ground-floor grid) ----------
+const up = new THREE.Group(); up.position.set(0, 2.8, 1.175); scene.add(up); CUR = up;
+floor([[2.4,0],[5,0],[5,3.1],[3.8,3.1],[3.8,3.7],[1.9,3.7],[1.9,1.7],[2.4,1.7]], floorMat);
+floor([[1.9,3.7],[3.8,3.7],[3.8,3.1],[5,3.1],[5,7.225],[2.75,7.225],[2.75,4.775],[1.9,4.775]], floorMat);
+floor([[0,4.775],[2.75,4.775],[2.75,7.225],[0,7.225]], floorMat);
+floor([[0,2.575],[0.9,2.575],[0.9,1.7],[1.9,1.7],[1.9,4.775],[0,4.775]], floorMat);
+floor([[0.9,0],[2.4,0],[2.4,1.7],[0.9,1.7]], mat.service);
+
+// Walls with door and window openings
+let walls = new THREE.Group(); CUR.add(walls); const wallGroups=[walls]; let WH = H;
+function wall(axis, c, a1, a2, ops=[]){
+  const seg = (a,b,y1,y2,m=mat.wall,d=T)=> axis==='x'
+    ? box(a,b,y1,y2,c-d/2,c+d/2,m,walls) : box(c-d/2,c+d/2,y1,y2,a,b,m,walls);
+  let cur = a1;
+  ops.sort((p,q)=>p.a-q.a).forEach(o=>{
+    if(o.a>cur) seg(cur,o.a,0,WH);
+    if(o.lo>0) seg(o.a,o.b,0,o.lo);
+    seg(o.a,o.b,o.hi,WH);
+    if(o.win){
+      const f=0.045, d=0.07, mid=(o.a+o.b)/2;
+      seg(o.a,o.b,o.lo,o.hi,mat.glass,0.01).castShadow=false;
+      seg(o.a,o.b,o.lo,o.lo+f,mat.frame,d); seg(o.a,o.b,o.hi-f,o.hi,mat.frame,d);
+      seg(o.a,o.a+f,o.lo,o.hi,mat.frame,d); seg(o.b-f,o.b,o.lo,o.hi,mat.frame,d);
+      seg(mid-0.02,mid+0.02,o.lo,o.hi,mat.frame,d);
+    }
+    cur = o.b;
+  });
+  if(a2>cur) seg(cur,a2,0,WH);
+}
+const win = (a,b,lo=0.95,hi=2.1)=>({a,b,lo,hi,win:true});
+const door = (a,b)=>({a,b,lo:0,hi:2.1});
+wall('x',0,2.4,5,[win(2.55,3.15,0.9),win(4.2,4.8,0.9)]);
+wall('z',5,0,7.225);
+wall('x',7.225,0,5,[win(1.425,2.425),win(3.0,4.0)]);
+wall('z',0,4.775,7.225);
+wall('z',2.4,0,1.7);
+wall('x',1.7,1.9,2.4);
+wall('z',1.9,1.7,4.775,[door(2.1,2.9),door(3.85,4.65)]);
+wall('x',3.1,3.8,5);
+wall('z',3.8,3.1,3.7);
+wall('x',3.7,1.9,3.8);
+wall('x',4.775,0,2.75,[door(0.15,0.95)]);
+wall('z',2.75,4.775,7.225);
+// Stair hall, T&B and stairwell on the second floor
+wall('z',0,-1.175,4.775);
+wall('x',-1.175,0,2.4);
+wall('z',2.4,-1.175,0);
+wall('x',0,0.9,2.4);
+wall('z',0.9,0,1.7);
+wall('x',1.7,0.9,1.9,[door(1.05,1.75)]);
+box(1.05,1.75,0,2.1,1.68,1.72,mat.door,walls);
+box(0.86,0.94,0,0.95,1.7,2.575,mat.white,walls);
+box(0.84,0.96,0.95,0.99,1.7,2.575,mat.oak,walls);
+// open door leaves
+box(1.9,2.7,0,2.1,2.88,2.92,mat.door,walls);
+box(1.9,2.7,0,2.1,3.83,3.87,mat.door,walls);
+box(0.13,0.17,0,2.1,4.775,5.575,mat.door,walls);
+
+function lamp(x,y,z,r=0.07){
+  const s = new THREE.Mesh(new THREE.SphereGeometry(r,20,14), mat.glow); s.position.set(x,y,z); CUR.add(s);
+  const p = new THREE.PointLight(0xffd9a0,0.35,2.6,2); p.position.set(x,y-0.05,z); CUR.add(p);
+}
+
+// ---------- Master bedroom ----------
+box(2.6,4.75,0,0.012,0.35,2.47,mat.rug,CUR,false);
+box(2.97,4.74,0,0.08,0.75,2.07,mat.dark);
+box(2.87,4.84,0.08,0.35,0.65,2.17,mat.oak);
+box(2.92,4.80,0.35,0.58,0.70,2.12,mat.linen);
+box(2.90,3.45,0.58,0.61,0.68,2.14,mat.greige);
+box(4.45,4.75,0.58,0.72,0.78,1.38,mat.linen);
+box(4.45,4.75,0.58,0.72,1.44,2.04,mat.linen);
+box(4.84,4.90,0.30,1.25,0.50,2.32,mat.greige);
+box(4.90,4.94,0,2.38,0.15,2.65,mat.oak);
+box(4.50,4.84,0.38,0.58,0.12,0.50,mat.oak);
+box(4.50,4.84,0.38,0.58,2.32,2.70,mat.oak);
+lamp(4.67,1.35,0.31); lamp(4.67,1.35,2.51);
+box(1.96,3.76,0,2.36,3.16,3.70,mat.white);
+box(1.96,2.56,0.02,2.34,3.10,3.16,mat.white);
+box(2.56,3.16,0.02,2.34,3.10,3.16,mat.mirror);
+box(3.16,3.76,0.02,2.34,3.10,3.16,mat.white);
+box(2.50,2.52,0.9,1.5,3.08,3.10,mat.dark); box(3.20,3.22,0.9,1.5,3.08,3.10,mat.dark);
+box(3.85,4.45,0.72,0.76,2.78,3.04,mat.oak);
+box(3.95,4.35,1.05,1.75,3.025,3.04,mat.mirror);
+[[2.55,3.15],[4.2,4.8]].forEach(([a,b])=>{
+  box(Math.max(a-0.16,2.47),a-0.01,0.1,2.3,0.07,0.13,mat.curtain);
+  box(b+0.01,b+0.16,0.1,2.3,0.07,0.13,mat.curtain);
+});
+
+// ---------- Boys' room ----------
+[[3.95,3.18],[4.89,3.18],[3.95,5.12],[4.89,5.12]].forEach(([x,z])=>box(x-0.03,x+0.03,0,1.75,z-0.03,z+0.03,mat.oak));
+box(3.95,4.89,0,0.25,3.18,5.12,mat.white);
+box(3.93,3.95,0.03,0.22,3.25,3.85,mat.oak); box(3.93,3.95,0.03,0.22,3.90,4.50,mat.oak);
+box(3.97,4.87,0.25,0.43,3.20,5.10,mat.blue);
+box(4.0,4.84,0.43,0.53,3.24,3.55,mat.linen);
+box(3.93,3.97,0.43,0.68,3.55,4.55,mat.oak);
+box(3.95,4.89,1.18,1.24,3.18,5.12,mat.oak);
+box(3.97,4.87,1.24,1.40,3.20,5.10,mat.sage);
+box(4.0,4.84,1.40,1.50,3.24,3.55,mat.linen);
+box(3.93,3.97,1.40,1.70,3.18,5.12,mat.oak);
+box(4.87,4.91,1.40,1.70,3.18,5.12,mat.oak);
+box(3.95,4.89,1.24,1.75,3.18,3.22,mat.oak);
+box(3.95,4.62,1.24,1.75,5.08,5.12,mat.oak);
+lamp(4.88,1.62,3.45,0.045); lamp(4.88,0.75,3.45,0.045);
+// Storage stairs at the foot of the bunk: 3 drawer risers + top cabinet, climbing toward the wall
+for(let i=0;i<4;i++){
+  const a=3.92+0.25*i, y0=0.28*i, y1=0.28*(i+1);
+  box(a,4.92,y0,y1,5.15,5.65,mat.white);
+  box(a,a+0.25,y1-0.025,y1,5.15,5.65,mat.oak);
+  box(a-0.012,a,y0+0.03,y1-0.03,5.19,5.61,i===3?mat.white:mat.sage);
+  const k=new THREE.Mesh(new THREE.SphereGeometry(0.018,12,8),mat.oak);
+  k.position.set(a-0.025,(y0+y1)/2,5.4); CUR.add(k);
+}
+function beam(p,q,t,m){
+  const a=new THREE.Vector3(...p), b=new THREE.Vector3(...q);
+  const mesh=new THREE.Mesh(new THREE.BoxGeometry(t,t,a.distanceTo(b)),m);
+  mesh.position.copy(a).add(b).multiplyScalar(0.5); mesh.lookAt(b);
+  mesh.castShadow=true; CUR.add(mesh);
+}
+box(3.93,3.97,0,1.15,5.62,5.66,mat.oak);
+box(4.84,4.88,1.12,2.0,5.62,5.66,mat.oak);
+beam([3.95,1.13,5.64],[4.86,1.97,5.64],0.045,mat.oak);
+[[4.05,0.28,1.22],[4.30,0.56,1.45],[4.55,0.84,1.68]].forEach(([x,b,t])=>box(x-0.015,x+0.015,b,t,5.625,5.655,mat.oak));
+box(4.34,4.94,0,2.36,5.75,7.165,mat.white);
+box(4.31,4.34,0.02,2.34,5.77,6.47,mat.white);
+box(4.31,4.34,0.02,2.34,6.47,7.15,mat.sage);
+box(2.81,3.36,0.72,0.75,5.75,7.165,mat.oak);
+box(2.81,3.30,0,0.72,6.72,7.12,mat.white);
+box(2.81,3.06,1.45,1.48,5.85,7.05,mat.oak);
+lamp(3.05,1.05,6.0,0.05);
+box(3.42,3.82,0.42,0.47,6.2,6.6,mat.sage); box(3.60,3.64,0,0.42,6.38,6.42,mat.dark); box(3.78,3.82,0.47,0.85,6.2,6.6,mat.sage);
+box(2.81,3.21,0,0.9,4.84,5.70,mat.white); box(3.21,3.23,0.05,0.85,4.86,5.68,mat.sage);
+box(2.81,3.80,0,0.9,3.76,4.10,mat.white); box(2.81,3.80,0.9,0.93,3.76,4.10,mat.oak);
+const rug = new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.45,0.012,48), M(0xc9d2c3,{roughness:1}));
+rug.position.set(3.45,0.006,4.55); rug.receiveShadow = true; CUR.add(rug);
+
+// ---------- Study ----------
+// Desk run along the partition wall with overhead cabinets
+box(2.12,2.69,0.72,0.75,4.84,7.165,mat.oak);
+box(2.15,2.66,0,0.72,6.65,7.12,mat.white);
+box(2.34,2.69,1.55,2.36,4.84,7.165,mat.white);
+box(2.33,2.34,1.55,1.58,4.84,7.165,mat.oak);
+box(2.36,2.67,1.53,1.55,4.9,7.1,mat.glow,CUR,false);
+box(2.58,2.61,0.92,1.28,5.25,5.85,mat.dark); box(2.60,2.64,0.75,0.92,5.52,5.58,mat.dark);
+box(1.62,2.02,0.45,0.5,5.4,5.8,mat.dark); box(1.80,1.84,0,0.45,5.58,5.62,mat.dark); box(1.58,1.63,0.5,1.05,5.4,5.8,mat.dark);
+// Tall cabinet beside the door
+box(0.98,2.05,0,2.36,4.84,5.24,mat.white);
+box(1.50,1.53,0.9,1.4,5.24,5.26,mat.oak);
+// Click-clack sofa bed under the window: closed by default, opens flat to about 115 x 190 cm
+const sofaClosed=new THREE.Group(), sofaOpen=new THREE.Group(); CUR.add(sofaClosed,sofaOpen); sofaOpen.visible=false;
+[[0.12,6.34],[1.90,6.34],[0.12,7.06],[1.90,7.06]].forEach(([x,z])=>box(x,x+0.05,0,0.12,z,z+0.05,mat.dark));
+[[0.12,6.04],[1.90,6.04]].forEach(([x,z])=>box(x,x+0.05,0,0.12,z,z+0.05,mat.dark,sofaOpen));
+box(0.08,1.98,0.12,0.42,6.32,7.12,mat.greige,sofaClosed);
+box(0.08,1.98,0.42,0.85,6.94,7.14,mat.greige,sofaClosed);
+box(0.30,0.75,0.42,0.80,6.80,6.94,mat.sage,sofaClosed); box(1.31,1.76,0.42,0.80,6.80,6.94,mat.sage,sofaClosed);
+box(0.08,1.98,0.12,0.40,5.98,7.14,mat.greige,sofaOpen);
+box(0.10,1.96,0.40,0.42,6.00,7.12,mat.linen,sofaOpen);
+box(0.20,0.75,0.42,0.54,6.78,7.08,mat.linen,sofaOpen); box(1.31,1.86,0.42,0.54,6.78,7.08,mat.linen,sofaOpen);
+box(0.10,1.40,0.42,0.45,6.00,6.60,mat.sage,sofaOpen);
+// Call background on the wall behind the desk chair
+box(0.06,0.09,1.0,1.8,5.6,6.1,mat.sage);
+box(0.5,1.95,0,0.012,5.3,5.95,mat.rug,CUR,false);
+
+// Room labels
+function label(text,x,y,z){
+  const c=document.createElement('canvas'); c.width=640; c.height=140;
+  const g=c.getContext('2d');
+  g.fillStyle='rgba(255,253,250,0.92)'; g.beginPath();
+  g.roundRect ? g.roundRect(8,18,624,104,52) : g.rect(8,18,624,104); g.fill();
+  g.fillStyle='#2b2824'; g.font='600 52px Figtree, system-ui, sans-serif';
+  g.textAlign='center'; g.textBaseline='middle'; g.fillText(text,320,72);
+  const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding;
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false}));
+  s.position.set(x,y,z); s.scale.set(1.5,0.33,1); s.renderOrder=10; CUR.add(s); return s;
+}
+const upLabels=[label('Master bedroom',3.7,3.0,1.4),label("Boys' room",3.3,3.0,5.6),label('Study',1.2,3.0,6.0)];
+
+// ---------- Ground floor (lot coordinates: rear line z=0, lot line z=10) ----------
+const ground = new THREE.Group(); scene.add(ground); CUR = ground;
+walls = new THREE.Group(); ground.add(walls); wallGroups.push(walls); WH = 2.8;
+const concrete = M(0xbab5ac,{roughness:1}), asphalt = M(0x5a5c5f,{roughness:1});
+const soffit = M(0xa8784a,{roughness:0.7}), steel = M(0x1d1d1d,{roughness:0.45}), ceil = M(0xf6f3ee,{roughness:1});
+const counterTop = M(0xe9e5de,{roughness:0.35}), steelSink = M(0xb9bec2,{roughness:0.25,metalness:0.7});
+floor([[0,0],[2.5,0],[2.5,1.5],[5,1.5],[5,6.5],[1.35,6.5],[1.35,7.9],[0,7.9]], floorMat);
+floor([[2.5,0],[5,0],[5,1.5],[2.5,1.5]], concrete);
+floor([[0,7.9],[1.35,7.9],[1.35,6.5],[5,6.5],[5,10],[0,10]], concrete);
+box(-3,8,-0.03,0,10,15,asphalt,ground,false);
+function ceiling(pts,holes,y,m){
+  const sh=new THREE.Shape(pts.map(([x,z])=>new THREE.Vector2(x,z)));
+  holes.forEach(h=>sh.holes.push(new THREE.Path(h.map(([x,z])=>new THREE.Vector2(x,z)))));
+  const mesh=new THREE.Mesh(new THREE.ShapeGeometry(sh),m); mesh.rotation.x=Math.PI/2; mesh.position.y=y; CUR.add(mesh); return mesh;
+}
+ceiling([[0,0],[2.5,0],[2.5,1.5],[5,1.5],[5,6.5],[1.35,6.5],[1.35,7.9],[0,7.9]],[[[0.06,0.1],[1.65,0.1],[1.65,1.0],[0.9,1.0],[0.9,3.75],[0.06,3.75]]],2.78,ceil);
+ceiling([[0,7.9],[1.35,7.9],[1.35,6.5],[5,6.5],[5,10],[0,10]],[],2.62,soffit);
+
+wall('z',0,0,7.9);
+wall('z',5,0,6.5);
+wall('x',0,0,5);
+wall('x',1.5,2.5,5,[win(3.4,4.2,1.1,1.9)]);
+wall('z',2.5,0,1.5,[door(0.55,1.35)]);
+wall('z',0.95,1.05,2.4);
+wall('z',1.6,1.05,2.4,[door(1.45,2.2)]);
+wall('x',1.05,0.95,1.6);
+wall('x',2.4,0.95,1.6);
+wall('x',6.5,1.35,5,[win(2.75,3.85,0.9,2.1)]);
+wall('z',1.35,6.5,7.9);
+wall('x',7.9,0,1.35,[door(0.1,0.9)]);
+box(1.58,1.62,0,2.1,1.45,2.2,mat.door,walls);
+box(2.48,2.52,0,2.1,0.55,1.35,mat.door,walls);
+box(0.1,0.14,0,2.1,7.1,7.9,mat.door,walls);
+
+// Stair: 3 steps west along the back wall, corner landing, then 12 risers up toward the front
+for(let k=1;k<=3;k++){ const a=1.65-0.25*k; box(a,a+0.25,0,0.175*k-0.03,0.1,1.0,mat.white); box(a,a+0.25,0.175*k-0.03,0.175*k,0.1,1.0,mat.oak); }
+box(0.06,0.9,0,0.67,0.1,1.0,mat.white); box(0.06,0.9,0.67,0.7,0.1,1.0,mat.oak);
+for(let i=1;i<=11;i++){ const z1=1.0+0.25*(i-1), top=0.7+0.175*i; box(0.06,0.9,0,top-0.03,z1,z1+0.25,mat.white); box(0.06,0.92,top-0.03,top,z1,z1+0.25,mat.oak); }
+box(0.9,0.915,0.1,1.6,2.5,3.08,mat.white); box(0.9,0.915,0.1,1.6,3.12,3.7,mat.white);
+box(0.915,0.93,0.8,1.0,3.0,3.04,mat.oak); box(0.915,0.93,0.8,1.0,3.16,3.2,mat.oak);
+box(0.92,0.96,1.68,2.6,2.38,2.42,mat.oak); box(0.92,0.96,2.62,3.7,3.7,3.74,mat.oak);
+beam([0.94,2.6,2.4],[0.94,3.7,3.72],0.045,mat.oak);
+
+// Kitchen (assumed L counter), refrigerator at the dining end
+box(2.55,4.94,0,0.88,1.56,2.16,mat.white); box(2.55,4.94,0.88,0.92,1.56,2.18,counterTop);
+box(4.34,4.94,0,0.88,2.16,3.6,mat.white); box(4.32,4.94,0.88,0.92,2.16,3.6,counterTop);
+box(2.55,3.35,1.55,2.3,1.56,1.91,mat.white); box(4.25,4.94,1.55,2.3,1.56,1.91,mat.white);
+box(4.59,4.94,1.55,2.3,2.16,2.55,mat.white); box(4.59,4.94,1.95,2.3,2.55,3.25,mat.white);
+box(3.25,3.75,0.86,0.921,1.66,2.06,steelSink);
+box(4.42,4.86,0.92,0.93,2.65,3.2,mat.dark);
+box(4.56,4.94,1.7,1.95,2.62,3.18,steelSink);
+box(2.55,4.94,0.15,0.18,2.16,2.165,mat.oak,ground,false);
+box(4.3,4.94,0,1.75,3.65,4.3,M(0xd5d8db,{roughness:0.35,metalness:0.3}));
+box(4.27,4.3,0.9,1.5,3.72,3.75,mat.dark);
+
+// Dining: banquette on the party wall, table, two chairs, pendant
+box(4.5,4.94,0,0.45,4.45,5.9,mat.oak); box(4.5,4.94,0.45,0.52,4.45,5.9,mat.sage); box(4.86,4.94,0.52,0.95,4.45,5.9,mat.greige);
+box(3.8,4.5,0.72,0.76,4.6,5.8,mat.oak); box(4.1,4.2,0,0.72,5.15,5.25,mat.dark); box(3.9,4.4,0,0.03,4.95,5.45,mat.dark);
+box(3.3,3.72,0.44,0.48,4.98,5.42,mat.white); box(3.3,3.34,0.48,0.9,4.98,5.42,mat.oak); box(3.49,3.53,0,0.44,5.18,5.22,mat.dark);
+box(3.94,4.38,0.44,0.48,5.9,6.32,mat.white); box(3.94,4.38,0.48,0.9,6.28,6.32,mat.oak); box(4.14,4.18,0,0.44,6.09,6.13,mat.dark);
+box(4.14,4.16,1.95,2.78,5.19,5.21,mat.dark); lamp(4.15,1.9,5.2,0.1);
+
+// Sala: oak TV wall, floating console, sofa, coffee table, rug
+box(0.06,0.09,0,2.78,4.55,6.45,mat.oak);
+box(0.09,0.48,0.3,0.6,4.7,6.3,mat.white);
+box(0.1,0.14,0.95,1.66,4.88,6.12,mat.dark);
+box(0.7,2.2,0,0.012,4.5,6.2,mat.rug,ground,false);
+box(2.1,2.95,0.1,0.42,4.3,6.3,mat.greige); box(2.75,2.95,0.42,0.85,4.3,6.3,mat.greige);
+box(2.1,2.95,0.42,0.62,4.3,4.45,mat.greige); box(2.1,2.95,0.42,0.62,6.15,6.3,mat.greige);
+box(2.55,2.75,0.42,0.72,4.6,5.0,mat.sage); box(2.55,2.75,0.42,0.72,5.6,6.0,mat.sage);
+box(1.2,1.7,0.35,0.4,5.0,5.7,mat.oak); box(1.3,1.6,0,0.35,5.1,5.6,mat.dark);
+lamp(2.5,2.6,3.0,0.06);
+
+// Entry: floating shoe cabinet and mirror
+box(0.99,1.29,0.15,1.0,6.6,7.8,mat.white); box(1.27,1.29,1.2,1.9,6.95,7.45,mat.mirror);
+
+// Service area: washer and laundry sink
+box(4.25,4.9,0,0.85,0.1,0.72,M(0xf2f2f0,{roughness:0.4})); box(3.45,4.1,0,0.85,0.1,0.62,mat.white);
+
+// Carport roof: soffit under the 2F overhang plus a new 1.6 m canopy to the lot line
+box(0,5,2.8,2.9,8.4,10.0,steel); box(0,5,2.6,2.9,9.95,10.05,steel); box(0,5,2.72,2.8,10.03,10.12,steel);
+box(0,0.1,0,2.62,9.9,10.0,steel); box(4.9,5.0,0,2.62,9.9,10.0,steel); box(4.86,4.94,0,2.72,10.05,10.12,steel);
+[[0.7,8.6],[2.3,7.1],[4.2,7.1],[2.3,9.3],[4.2,9.3]].forEach(([x,z])=>box(x-0.06,x+0.06,2.605,2.62,z-0.06,z+0.06,mat.glow,ground,false));
+
+// Toyota Vios, nose-in, with a wheel stop
+const carMat = M(0xc9ccd1,{roughness:0.3,metalness:0.4}), tint = M(0x2a2f36,{roughness:0.15});
+box(2.4,3.97,0,0.1,7.28,7.43,M(0xd9a400,{roughness:0.8}));
+box(2.32,4.05,0.2,0.72,6.82,11.23,carMat);
+box(2.42,3.95,0.72,1.4,8.0,10.25,tint); box(2.46,3.91,1.4,1.47,8.25,10.05,carMat);
+box(2.45,2.8,0.52,0.62,6.8,6.82,mat.glow,ground,false); box(3.57,3.92,0.52,0.62,6.8,6.82,mat.glow,ground,false);
+[[2.32,7.75],[4.05,7.75],[2.32,10.3],[4.05,10.3]].forEach(([x,z])=>{ const w=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.2,24),mat.dark); w.rotation.z=Math.PI/2; w.position.set(x,0.3,z); w.castShadow=true; ground.add(w); });
+
+const gfLabels=[label('Sala',1.5,3.1,5.5),label('Dining',3.9,3.1,4.4),label('Kitchen',3.6,3.1,2.4),label('Stair',0.5,3.1,1.8),label('Carport',2.6,3.3,8.9),label('Service area',3.8,3.1,0.6)];
+CUR = scene;
+
+
+// Views
+const views = {
+  house:  {p:[11,12,17], t:[2.5,2.2,5.5], up:true, lab:'up'},
+  ground: {p:[10,11,15], t:[2.5,0.3,5.5], up:false, lab:'gf'},
+  upper:  {p:[9.5,13,13], t:[2.5,3,4.8], up:true, lab:'up'},
+  sala:   {p:[4.5,1.6,6.25], t:[0.4,1.1,4.6], up:true},
+  kitchen:{p:[1.3,1.65,5.9], t:[4.3,1.0,2.2], up:true},
+  carport:{p:[2.6,1.8,15.5], t:[2.6,1.8,7.0], up:true},
+  master: {p:[2.2,4.45,3.925], t:[4.4,3.6,2.375], up:true},
+  boys:   {p:[2.2,4.45,5.625], t:[4.2,3.7,6.775], up:true},
+  study:  {p:[0.3,4.85,6.125], t:[1.55,3.25,7.675], up:true}
+};
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let anim=null;
+const V=(a)=>new THREE.Vector3(...a);
+function setScene(v){
+  up.visible = v.up;
+  upLabels.forEach(l=>l.visible = v.lab==='up');
+  gfLabels.forEach(l=>l.visible = v.lab==='gf');
+}
+function fly(keys,done){
+  if(reduce){ const k=keys[keys.length-1]; camera.position.copy(V(k.p)); controls.target.copy(V(k.t)); if(done) done(); return; }
+  const segs=[]; let p0=camera.position.clone(), t0=controls.target.clone();
+  keys.forEach(k=>{ segs.push({p0,t0,p1:V(k.p),t1:V(k.t),d:k.d||900}); p0=V(k.p); t0=V(k.t); });
+  controls.enabled=false; anim={segs,i:0,start:performance.now(),done};
+}
+function press(id){ document.querySelectorAll('[id^="v-"]').forEach(b=>b.setAttribute('aria-pressed', b.id===id)); }
+function go(name){ const v=views[name]; setScene(v); press('v-'+name); fly([{p:v.p,t:v.t}]); }
+Object.keys(views).forEach(n=>document.getElementById('v-'+n).addEventListener('click',()=>{ if(!anim) go(n); }));
+
+// Walk the stair: kitchen hallway -> back-wall steps -> landing -> main flight -> bedroom hallway
+const stairPath=[
+  {p:[2.25,1.6,0.55], t:[0.3,1.25,0.55], d:1100},
+  {p:[1.3,1.95,0.55], t:[0.2,1.75,0.55], d:1000},
+  {p:[0.48,2.3,0.55], t:[0.48,2.6,2.6], d:1100},
+  {p:[0.48,3.35,2.25], t:[0.48,3.95,4.4], d:1300},
+  {p:[0.55,4.4,4.0], t:[1.0,4.3,6.2], d:1300},
+  {p:[0.75,4.45,3.95], t:[2.2,4.05,6.3], d:900}
+];
+const walkBtn=document.getElementById('walk'); let upstairs=false;
+walkBtn.addEventListener('click',()=>{
+  if(anim) return;
+  setScene({up:true}); press('');
+  const keys = upstairs ? stairPath.slice(0,-1).reverse().concat([{p:[2.6,1.6,1.6],t:[4.3,1.1,3.0],d:1000}]) : stairPath;
+  walkBtn.disabled=true;
+  fly(keys,()=>{ upstairs=!upstairs; walkBtn.disabled=false; walkBtn.textContent = upstairs ? 'Walk down the stairs' : 'Walk up the stairs'; });
+});
+const sofaBtn=document.getElementById('t-sofa');
+sofaBtn.addEventListener('click',()=>{
+  const on = sofaBtn.getAttribute('aria-pressed')!=='true';
+  sofaBtn.setAttribute('aria-pressed',on); sofaOpen.visible=on; sofaClosed.visible=!on;
+});
+const wallBtn=document.getElementById('t-walls');
+wallBtn.addEventListener('click',()=>{
+  const on = wallBtn.getAttribute('aria-pressed')!=='true';
+  wallBtn.setAttribute('aria-pressed',on); wallGroups.forEach(g=>g.scale.y = on ? 0.42 : 1);
+});
+
+setScene(views.house); camera.position.copy(V(views.house.p)); controls.target.copy(V(views.house.t));
+
+
+function resize(){
+  const w=stage.clientWidth, h=stage.clientHeight;
+  renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage); resize();
+
+function tick(now){
+  if(anim){
+    const seg=anim.segs[anim.i];
+    let k=Math.min((now-anim.start)/seg.d,1); const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    camera.position.lerpVectors(seg.p0,seg.p1,e); controls.target.lerpVectors(seg.t0,seg.t1,e);
+    if(k===1){ anim.i++; anim.start=now; if(anim.i>=anim.segs.length){ const done=anim.done; anim=null; controls.enabled=true; if(done) done(); } }
+  }
+  controls.update(); renderer.render(scene,camera); requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+})();
+</script>
+
+</body>
+</html>
