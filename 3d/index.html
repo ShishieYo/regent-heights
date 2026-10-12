@@ -96,7 +96,7 @@ ul.notes{margin:0;padding-left:18px;color:var(--muted);display:grid;gap:4px}
         <li><span class="chip" style="background:#cfc5b6"></span>Greige fabric</li>
         <li><span class="chip" style="background:#93a38c"></span>Sage accent</li>
         <li><span class="chip" style="background:#8fa3b5"></span>Muted blue accent</li>
-        <li><span class="chip" style="background:#96663f"></span>Existing floor tile</li>
+        <li><span class="chip" style="background:#e5e3df"></span>Grayish-white floor tile</li>
         <li><span class="chip" style="background:#a8784a"></span>Carport soffit</li>
       </ul>
     </section>
@@ -172,26 +172,19 @@ function box(x1,x2,y1,y2,z1,z2,m,parent=CUR,cast=true){
   parent.add(mesh); return mesh;
 }
 
-// Floor tile texture: 20 cm planks, staggered, light grout
-function plankTexture(){
+// Floor tile texture: 60 x 60 cm grayish-white porcelain, smooth, fine grout (one canvas = 1.2 m)
+function tileTexture(){
   const c = document.createElement('canvas'); c.width = c.height = 512;
   const x = c.getContext('2d');
-  const tones = ['#9a6a42','#8f603b','#a37249','#956641','#8a5c38'];
-  for(let r=0;r<5;r++){
-    const off = (r*0.37)%1;
-    for(let k=-1;k<2;k++){
-      const s = (k+off)*512;
-      x.fillStyle = tones[(r*3+k+5)%5];
-      x.fillRect(s, r*102.4, 512, 102.4);
-      x.fillStyle = '#cdbfae'; x.fillRect(s, r*102.4, 3, 102.4);
-    }
-    x.fillStyle = '#cdbfae'; x.fillRect(0, r*102.4, 512, 3);
-  }
+  const tones = ['#e7e5e1','#e4e2de','#e9e7e3','#e5e3df'];
+  for(let r=0;r<2;r++) for(let k=0;k<2;k++){ x.fillStyle = tones[r*2+k]; x.fillRect(k*256, r*256, 256, 256); }
+  x.fillStyle = '#d0cdc7';
+  for(let i=0;i<=2;i++){ x.fillRect(i*256-1,0,2,512); x.fillRect(0,i*256-1,512,2); }
   const t = new THREE.CanvasTexture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding;
-  t.anisotropy = 8; return t;
+  t.repeat.set(1/1.2,1/1.2); t.anisotropy = 8; return t;
 }
-const floorMat = M(0xffffff,{map:plankTexture(),roughness:0.35});
+const floorMat = M(0xffffff,{map:tileTexture(),roughness:0.28});
 
 function floor(pts,m){
   const s = new THREE.Shape(pts.map(([px,pz])=>new THREE.Vector2(px,-pz)));
@@ -433,21 +426,29 @@ box(2.55,4.94,0.15,0.18,2.16,2.165,mat.oak,ground,false);
 box(4.3,4.94,0,1.75,3.65,4.3,M(0xd5d8db,{roughness:0.35,metalness:0.3}));
 box(4.27,4.3,0.9,1.5,3.72,3.75,mat.dark);
 
-// Dining: banquette on the party wall, table, two chairs, pendant
-box(4.5,4.94,0,0.45,4.45,5.9,mat.oak); box(4.5,4.94,0.45,0.52,4.45,5.9,mat.sage); box(4.86,4.94,0.52,0.95,4.45,5.9,mat.greige);
-box(3.8,4.5,0.72,0.76,4.6,5.8,mat.oak); box(4.1,4.2,0,0.72,5.15,5.25,mat.dark); box(3.9,4.4,0,0.03,4.95,5.45,mat.dark);
-box(3.94,4.38,0.44,0.48,5.9,6.32,mat.white); box(3.94,4.38,0.48,0.9,6.28,6.32,mat.oak); box(4.14,4.18,0,0.44,6.09,6.13,mat.dark);
-box(4.14,4.16,1.95,2.78,5.19,5.21,mat.dark); lamp(4.15,1.9,5.2,0.1);
+// Dining beside the kitchen: 90 cm round table, four chairs, pendant
+const rt=new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.45,0.035,40),mat.oak); rt.position.set(2.7,0.74,3.6); rt.castShadow=true; ground.add(rt);
+const ped=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.72,16),mat.dark); ped.position.set(2.7,0.36,3.6); ground.add(ped);
+const pbase=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.25,0.03,24),mat.dark); pbase.position.set(2.7,0.015,3.6); ground.add(pbase);
+[[2.7,2.98,0,-1],[2.7,4.22,0,1],[2.08,3.6,-1,0],[3.32,3.6,1,0]].forEach(([cx,cz,dx,dz])=>{
+  box(cx-0.21,cx+0.21,0.44,0.48,cz-0.21,cz+0.21,mat.white);
+  box(cx-0.03,cx+0.03,0,0.44,cz-0.03,cz+0.03,mat.dark);
+  const bx=cx+dx*0.19, bz=cz+dz*0.19;
+  box(dx?bx-0.02:cx-0.21, dx?bx+0.02:cx+0.21, 0.48,0.88, dz?bz-0.02:cz-0.21, dz?bz+0.02:cz+0.21, mat.oak);
+});
+box(2.69,2.71,1.95,2.78,3.59,3.61,mat.dark); lamp(2.7,1.9,3.6,0.1);
 
 // Sala: oak TV wall, floating console, sofa, coffee table, rug
-box(0.92,0.94,0.25,1.75,3.85,5.3,mat.oak);
-box(0.94,1.28,0.3,0.58,3.9,5.25,mat.white);
-box(0.94,0.98,0.95,1.6,4.12,5.22,mat.dark);
-box(1.0,2.3,0,0.012,3.7,5.5,mat.rug,ground,false);
-box(2.3,3.15,0.1,0.42,3.6,5.6,mat.greige); box(2.95,3.15,0.42,0.85,3.6,5.6,mat.greige);
-box(2.3,3.15,0.42,0.62,3.6,3.75,mat.greige); box(2.3,3.15,0.42,0.62,5.45,5.6,mat.greige);
-box(2.75,2.95,0.42,0.72,3.9,4.3,mat.sage); box(2.75,2.95,0.42,0.72,4.9,5.3,mat.sage);
-box(1.45,1.95,0.35,0.4,4.3,4.95,mat.oak); box(1.55,1.85,0,0.35,4.4,4.85,mat.dark);
+box(0.9,0.915,0.1,1.7,3.75,4.45,mat.white); box(0.9,0.915,0.1,2.3,4.5,5.2,mat.white);
+box(0.915,0.93,0.8,1.0,4.4,4.44,mat.oak); box(0.915,0.93,0.8,1.0,4.51,4.55,mat.oak);
+box(4.91,4.94,0,2.78,4.6,6.4,mat.oak);
+box(4.55,4.91,0.3,0.6,4.75,6.25,mat.white);
+box(4.86,4.9,0.95,1.6,4.95,6.05,mat.dark);
+box(2.4,4.5,0,0.012,4.7,6.35,mat.rug,ground,false);
+box(2.6,3.45,0.1,0.42,4.6,6.4,mat.greige); box(2.6,2.8,0.42,0.85,4.6,6.4,mat.greige);
+box(2.6,3.45,0.42,0.62,4.6,4.75,mat.greige); box(2.6,3.45,0.42,0.62,6.25,6.4,mat.greige);
+box(2.8,3.0,0.42,0.72,4.9,5.3,mat.sage); box(2.8,3.0,0.42,0.72,5.7,6.1,mat.sage);
+box(3.6,4.15,0.35,0.4,5.15,5.85,mat.oak); box(3.7,4.05,0,0.35,5.25,5.75,mat.dark);
 lamp(2.5,2.6,3.0,0.06);
 
 // Entry: floating shoe cabinet and mirror
@@ -469,7 +470,7 @@ box(2.42,3.95,0.72,1.4,8.0,10.25,tint); box(2.46,3.91,1.4,1.47,8.25,10.05,carMat
 box(2.45,2.8,0.52,0.62,6.8,6.82,mat.glow,ground,false); box(3.57,3.92,0.52,0.62,6.8,6.82,mat.glow,ground,false);
 [[2.32,7.75],[4.05,7.75],[2.32,10.3],[4.05,10.3]].forEach(([x,z])=>{ const w=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.2,24),mat.dark); w.rotation.z=Math.PI/2; w.position.set(x,0.3,z); w.castShadow=true; ground.add(w); });
 
-const gfLabels=[label('Sala',1.7,3.1,5.0),label('Dining',4.1,3.1,6.0),label('Kitchen',3.6,3.1,2.4),label('T&B',0.65,3.1,1.0),label('Stair',0.5,3.3,3.6),label('Carport',2.6,3.3,8.9),label('Service area',3.4,3.1,0.6)];
+const gfLabels=[label('Sala',3.7,3.1,5.6),label('Dining',2.3,3.1,3.6),label('Kitchen',3.6,3.1,2.4),label('T&B',0.65,3.1,1.0),label('Stair',0.5,3.3,3.6),label('Carport',2.6,3.3,8.9),label('Service area',3.4,3.1,0.6)];
 CUR = scene;
 
 
@@ -478,7 +479,7 @@ const views = {
   house:  {p:[11,12,17], t:[2.5,2.2,5.5], up:true, lab:'up'},
   ground: {p:[10,11,15], t:[2.5,0.3,5.5], up:false, lab:'gf'},
   upper:  {p:[9.5,13,13], t:[2.5,3,4.8], up:true, lab:'up'},
-  sala:   {p:[4.2,1.6,5.9], t:[0.9,1.1,4.3], up:true},
+  sala:   {p:[1.3,1.65,3.4], t:[4.6,1.0,5.8], up:true},
   kitchen:{p:[1.3,1.65,5.9], t:[4.3,1.0,2.2], up:true},
   carport:{p:[2.6,1.7,16.5], t:[2.6,1.8,7.0], up:true},
   master: {p:[2.2,4.45,3.925], t:[4.4,3.6,2.375], up:true},
