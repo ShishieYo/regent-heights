@@ -60,7 +60,7 @@ ul.notes{margin:0;padding-left:18px;color:var(--muted);display:grid;gap:4px}
   <header>
     <div class="eyebrow">Alexa unit · whole house · preliminary</div>
     <h1>Both floors, one walk-through</h1>
-    <p>The ground floor and the bedrooms stacked as one house, joined by the stair. Use the room buttons to jump around, or walk up the stairs from the kitchen hallway to the bedroom hallway.</p>
+    <p>The ground floor and the bedrooms stacked as one house, joined by the stair. Use the room buttons to jump around, or walk from the kitchen through the service-area door and up the stairs to the bedroom hallway.</p>
   </header>
 
   <div class="viewer" id="viewer">
@@ -380,8 +380,8 @@ walls = new THREE.Group(); ground.add(walls); wallGroups.push(walls); WH = 2.8;
 const concrete = M(0xbab5ac,{roughness:1}), asphalt = M(0x5a5c5f,{roughness:1});
 const soffit = M(0xa8784a,{roughness:0.7}), steel = M(0x1d1d1d,{roughness:0.45}), ceil = M(0xf6f3ee,{roughness:1});
 const counterTop = M(0xe9e5de,{roughness:0.35}), steelSink = M(0xb9bec2,{roughness:0.25,metalness:0.7});
-floor([[0,0],[2.5,0],[2.5,1.5],[5,1.5],[5,6.5],[1.35,6.5],[1.35,7.9],[0,7.9]], floorMat);
-floor([[2.5,0],[5,0],[5,1.5],[2.5,1.5]], concrete);
+floor([[0,0],[1.6,0],[1.6,1.5],[5,1.5],[5,6.5],[1.35,6.5],[1.35,7.9],[0,7.9]], floorMat);
+floor([[1.6,0],[5,0],[5,1.5],[1.6,1.5]], concrete);
 floor([[0,7.9],[1.35,7.9],[1.35,6.5],[5,6.5],[5,10],[0,10]], concrete);
 const sidewalk = M(0xd2cdc4,{roughness:1}), curb = M(0xe4e0d8,{roughness:0.9}), paint = M(0xf3f1ea,{roughness:0.8});
 box(-14,19,-0.05,-0.01,-1,10,M(0xd9d4cb,{roughness:1}),ground,false);
@@ -396,23 +396,22 @@ function ceiling(pts,holes,y,m){
   holes.forEach(h=>sh.holes.push(new THREE.Path(h.map(([x,z])=>new THREE.Vector2(x,z)))));
   const mesh=new THREE.Mesh(new THREE.ShapeGeometry(sh),m); mesh.rotation.x=Math.PI/2; mesh.position.y=y; CUR.add(mesh); return mesh;
 }
-ceiling([[0,0],[2.5,0],[2.5,1.5],[5,1.5],[5,6.5],[1.35,6.5],[1.35,7.9],[0,7.9]],[[[0.06,0.1],[1.65,0.1],[1.65,1.0],[0.9,1.0],[0.9,3.75],[0.06,3.75]]],2.78,ceil);
+ceiling([[0,0],[1.6,0],[1.6,1.5],[5,1.5],[5,6.5],[1.35,6.5],[1.35,7.9],[0,7.9]],[[[0.06,0.1],[1.55,0.1],[1.55,1.0],[0.9,1.0],[0.9,3.75],[0.06,3.75]]],2.78,ceil);
 ceiling([[0,7.9],[1.35,7.9],[1.35,6.5],[5,6.5],[5,10],[0,10]],[],2.62,soffit);
 
 wall('z',0,0,7.9);
 wall('z',5,0,6.5);
 wall('x',0,0,5);
-wall('x',1.5,2.5,5,[win(3.4,4.2,1.1,1.9)]);
-wall('z',2.5,0,1.5,[door(0.55,1.35)]);
+wall('x',1.5,1.6,5,[door(1.65,2.45),win(3.4,4.2,1.1,1.9)]);
 wall('z',0.95,1.05,2.4);
-wall('z',1.6,1.05,2.4,[door(1.45,2.2)]);
+wall('z',1.6,1.05,2.4,[door(1.55,2.25)]);
 wall('x',1.05,0.95,1.6);
 wall('x',2.4,0.95,1.6);
 wall('x',6.5,1.35,5,[win(2.75,3.85,0.9,2.1)]);
 wall('z',1.35,6.5,7.9);
 wall('x',7.9,0,1.35,[door(0.1,0.9)]);
-box(1.58,1.62,0,2.1,1.45,2.2,mat.door,walls);
-box(2.48,2.52,0,2.1,0.55,1.35,mat.door,walls);
+box(1.58,1.62,0,2.1,1.55,2.25,mat.door,walls);
+box(2.43,2.47,0,2.1,0.72,1.5,mat.door,walls);
 box(0.1,0.14,0,2.1,7.1,7.9,mat.door,walls);
 
 // Stair: 3 steps west along the back wall, corner landing, then 12 risers up toward the front
@@ -509,7 +508,8 @@ Object.keys(views).forEach(n=>document.getElementById('v-'+n).addEventListener('
 
 // Walk the stair: kitchen hallway -> back-wall steps -> landing -> main flight -> bedroom hallway
 const stairPath=[
-  {p:[2.25,1.6,0.55], t:[0.3,1.25,0.55], d:1100},
+  {p:[2.05,1.6,2.7], t:[2.05,1.45,0.3], d:1100},
+  {p:[2.0,1.6,0.75], t:[0.3,1.3,0.55], d:1300},
   {p:[1.3,1.95,0.55], t:[0.2,1.75,0.55], d:1000},
   {p:[0.48,2.3,0.55], t:[0.48,2.6,2.6], d:1100},
   {p:[0.48,3.35,2.25], t:[0.48,3.95,4.4], d:1300},
@@ -520,7 +520,7 @@ const walkBtn=document.getElementById('walk'); let upstairs=false;
 walkBtn.addEventListener('click',()=>{
   if(anim) return;
   setScene({up:true}); press('');
-  const keys = upstairs ? stairPath.slice(0,-1).reverse().concat([{p:[2.6,1.6,1.6],t:[4.3,1.1,3.0],d:1000}]) : stairPath;
+  const keys = upstairs ? stairPath.slice(0,-1).reverse() : stairPath;
   walkBtn.disabled=true;
   fly(keys,()=>{ upstairs=!upstairs; walkBtn.disabled=false; walkBtn.textContent = upstairs ? 'Walk down the stairs' : 'Walk up the stairs'; });
 });
